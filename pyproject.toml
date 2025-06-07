@@ -3,12 +3,12 @@ requires = ["setuptools","setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include = ["bull_stacj*"]
+include = ["bull_stack*"]
 exclude = ["docs*", "tests*"]
 
 [project]
 name = "Bull-Stack"
-version = "0.0.1"
+version = "0.0.2"
 readme = "README.md"
 dependencies = [
   'Flask-SQLAlchemy',

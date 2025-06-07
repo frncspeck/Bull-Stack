@@ -65,6 +65,10 @@ class BullStack:
         db = SQLAlchemy(self.app)
         iam = IAM(db)
         iam.init_app(self.app)
+        with self.app.app_context():
+            # These extensions do not auto-create tables
+            # unlike AutoBlueprint
+            db.create_all()
 
         # Blueprint extensions
         for blueprint in self.blueprints:
