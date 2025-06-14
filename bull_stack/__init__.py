@@ -1,3 +1,4 @@
+import os
 import inspect
 from dataclasses import dataclass
 from collections import namedtuple
@@ -19,9 +20,13 @@ class BullStack:
     logo: str = None
     index_page: str = 'base.html'
     index_redirect: bool = None
-
+    secret_key: str = os.urandom(12).hex() # TODO field with default_factory, to save in location
+    sql_db_uri: str = "sqlite:///:memory:"
+    admin_user: str = 'badmin'
+    admin_email: str = None
+    admin_init_password: str = None
+    
     def create_app(self):
-        import os
         from flask import Flask
         from flask_sqlalchemy import SQLAlchemy
         from flask_fefset import FEFset
@@ -32,8 +37,8 @@ class BullStack:
         self.app = Flask(self.name)
 
         # App configuration
-        self.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-        self.app.config['SECRET_KEY'] = os.urandom(12).hex()
+        self.app.config["SQLALCHEMY_DATABASE_URI"] = self.sql_db_uri
+        self.app.config['SECRET_KEY'] = self.secret_key
         self.app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024 # max 50MB upload
         if self.tasks_enabled:
             self.app.config.from_mapping(
@@ -56,7 +61,7 @@ class BullStack:
             os.makedirs(self.app.instance_path)
         
         # App extensions
-        fef = FEFset(frontend='bootstrap4')
+        fef = FEFset(frontend='bootstrap4', role_protection=True)
         if self.brand_name: fef.settings['brand_name'] = self.brand_name
         if self.logo: fef.settings['logo_url'] = os.path.join('/static', self.logo)
         fef.init_app(self.app)
@@ -69,6 +74,11 @@ class BullStack:
             # These extensions do not auto-create tables
             # unlike AutoBlueprint
             db.create_all()
+            # Check if admin user should be created
+            if self.admin_init_password and not iam.models.User.query.count():
+                iam.add_user(
+                    self.admin_user, self.admin_email, self.admin_init_password
+                )
 
         # Blueprint extensions
         for blueprint in self.blueprints:

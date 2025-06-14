@@ -6,8 +6,8 @@ class Test(AutoBlueprint):
     class Genus:
         name: str
         family: str
-        species: relationship = None
-        #species: relationship = relationship('Species', back_populates='genus', cascade="all, delete-orphan")
+        species: list[int] = None
+        #species: list[int] = relationship('Species', back_populates='genus', cascade="all, delete-orphan")
 
         def __str__(self):
             return self.name
@@ -27,7 +27,11 @@ class Test(AutoBlueprint):
     def show_species(self) -> str:
         return f"{self.query.genus.get(1).species_list}"
 
-appstack = bs.BullStack(__name__, [Test(enable_crud=True,url_prefix=False)])
+appstack = bs.BullStack(
+    __name__, [Test(enable_crud=True,url_prefix=False)],
+    sql_db_uri='sqlite:///project.db',
+    admin_init_password='badmin'
+)
 
 def create_app():
     return appstack.create_app()

@@ -8,7 +8,7 @@ exclude = ["docs*", "tests*"]
 
 [project]
 name = "Bull-Stack"
-version = "0.0.2"
+version = "0.0.3"
 readme = "README.md"
 dependencies = [
   'Flask-SQLAlchemy',
@@ -16,4 +16,10 @@ dependencies = [
   'Flask-UXFab',
   'Flask-Bauto',
   'Flask-IAM'
+]
+
+[project.optional-dependencies]
+dev = [
+  'build',
+  'twine',
 ]
