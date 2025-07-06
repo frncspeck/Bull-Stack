@@ -22,6 +22,7 @@ class BullStack:
     index_redirect: bool = None
     secret_key: str = os.urandom(12).hex() # TODO field with default_factory, to save in location
     sql_db_uri: str = "sqlite:///:memory:"
+    db_migration: bool = False
     admin_user: str = 'badmin'
     admin_email: str = None
     admin_init_password: str = None
@@ -67,7 +68,17 @@ class BullStack:
         fef.init_app(self.app)
         uxf = UXFab()
         uxf.init_app(self.app)
+
+        ## Database
         db = SQLAlchemy(self.app)
+        if self.db_migration:
+            #from flask_migrate import Migrate
+            from bull_stack.migrate import run_conditional_migration
+            #migrate = Migrate(self.app, db, render_as_batch=True, compare_type=False)
+            run_conditional_migration(self.app, db)
+
+
+        ## User and role management
         iam = IAM(db)
         iam.init_app(self.app)
         with self.app.app_context():
