@@ -71,12 +71,6 @@ class BullStack:
 
         ## Database
         db = SQLAlchemy(self.app)
-        if self.db_migration:
-            #from flask_migrate import Migrate
-            from bull_stack.migrate import run_conditional_migration
-            #migrate = Migrate(self.app, db, render_as_batch=True, compare_type=False)
-            run_conditional_migration(self.app, db)
-
 
         ## User and role management
         iam = IAM(db)
@@ -94,6 +88,13 @@ class BullStack:
         # Blueprint extensions
         for blueprint in self.blueprints:
             blueprint.init_app(self.app)
+
+        # db migration
+        if self.db_migration:
+            #from flask_migrate import Migrate
+            from bull_stack.migrate import run_conditional_migration
+            #migrate = Migrate(self.app, db, render_as_batch=True, compare_type=False)
+            run_conditional_migration(self.app, db)
 
         @self.app.errorhandler(500)
         def internal_error(error):
