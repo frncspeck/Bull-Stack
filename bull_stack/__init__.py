@@ -6,7 +6,7 @@ from flask import Blueprint, render_template, redirect, flash, url_for
 from flask_wtf import FlaskForm
 from wtforms import Form, FormField, FieldList, StringField, EmailField, SubmitField, SelectField, BooleanField, IntegerField, FloatField
 from wtforms.validators import InputRequired, Optional
-from sqlalchemy import Table, Column, Integer, String, ForeignKey
+from sqlalchemy import MetaData, Table, Column, Integer, String, ForeignKey
 from sqlalchemy.orm import registry, relationship
 from flask_bauto import AutoBlueprint
 
@@ -70,7 +70,15 @@ class BullStack:
         uxf.init_app(self.app)
 
         ## Database
-        db = SQLAlchemy(self.app)
+        convention = {
+            "ix": "ix_%(column_0_label)s",
+            "uq": "uq_%(table_name)s_%(column_0_name)s",
+            "ck": "ck_%(table_name)s_%(constraint_name)s",
+            "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+            "pk": "pk_%(table_name)s"
+        }
+        metadata = MetaData(naming_convention=convention)
+        db = SQLAlchemy(self.app, metadata=metadata)
         # db migration
         if self.db_migration:
             from flask_migrate import Migrate
