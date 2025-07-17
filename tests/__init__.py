@@ -30,7 +30,9 @@ class Test(AutoBlueprint):
 appstack = bs.BullStack(
     __name__, [Test(enable_crud=True,url_prefix=False)],
     sql_db_uri='sqlite:///project.db',
-    admin_init_password='badmin', db_migration=True
+    admin_init_password='badmin',
+    admin_full_control=True,
+    db_migration=True
 )
 
 def create_app():

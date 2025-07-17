@@ -26,6 +26,7 @@ class BullStack:
     admin_user: str = 'badmin'
     admin_email: str = None
     admin_init_password: str = None
+    admin_full_control: bool = False
     
     def create_app(self):
         from flask import Flask
@@ -50,6 +51,8 @@ class BullStack:
                     task_ignore_result=True,
                 ),
             )
+        if self.admin_full_control:
+            self.app.config['IAM_ADMIN_FULL_ACCESS'] = True
         if self.config_filename:
             self.app.config.from_pyfile(self.config_filename)
 
